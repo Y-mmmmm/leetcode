@@ -1,2 +1,3 @@
-# leetcode
-刷题记录
+# leetcode刷题记录
+
+主要以C为主，部分为C++
