@@ -1,0 +1,106 @@
+方法一
+
+链接：https://www.nowcoder.com/questionTerminal/abc3fe2ce8e146608e868a70efebf62e?f=discussion
+来源：牛客网
+
+/* 思路
+* 矩阵是有序的，从左下角来看，向上数字递减，向右数字递增，
+* 因此从左下角开始查找，当要查找数字比左下角数字大时。右移
+* 要查找数字比左下角数字小时，上移
+*/
+
+
+链接：https://www.nowcoder.com/questionTerminal/abc3fe2ce8e146608e868a70efebf62e?answerType=1&f=discussion
+来源：牛客网
+
+改变个说法，即对于左下角的值 m，m 是该行最小的数，是该列最大的数
+每次将 m 和目标值 target 比较：
+
+    当 m < target，由于 m 已经是该行最大的元素，想要更大只有从列考虑，取值右移一位
+    当 m > target，由于 m 已经是该列最小的元素，想要更小只有从行考虑，取值上移一位
+    当 m = target，找到该值，返回 true 
+
+用某行最小或某列最大与 target 比较，每次可剔除一整行或一整列
+
+同理，也可以右上进行查找
+
+方法二
+暴力查找
+
+方法三
+逐行二分查找
+
+方法四
+双折半查找法
+链接：https://www.nowcoder.com/questionTerminal/abc3fe2ce8e146608e868a70efebf62e?answerType=1&f=discussion
+来源：牛客网
+
+二维数组分为上下左右四个边界top，bottom，left，right：
+对上边界top进行折半查找，假设终止点为E，则可以将二维数组位于终止点E右边的矩形Rr排除，因为终止点E小于其右边相邻的元素E+1，而E+1是右边矩形Rr的最小元素(左上元素)
+同理，对下边界bottom折半，可以排除二维数组位于终止点E左边的矩形Rl排除，
+对左边界left折半，可以排除二维数组位于终止点E下边的矩形Rb排除，
+对右边界right折半，可以排除二维数组位于终止点E上边的矩形Rt排除，
+一轮过去，边界范围缩小，对由新边界组成的矩形重复以上操作，直到范围缩小为只有一个元素
+
+class Solution {
+public:
+    bool Find(int target, vector<vector<int> > array) {
+        if (array.size()==0 || array[0].size()==0)
+            return false;
+        else {
+            int top = 0, bottom = array.size()-1;
+            int left = 0, right = array[0].size()-1;
+            int sLeft = 0, sRight = 0;
+            int sTop = 0, sBottom = 0;
+            int mid = 0;
+
+            for (;left<right || top<bottom;) {
+                //对上边界进行折半，可以缩小右边界
+                sLeft = left, sRight = right;
+                for (;sLeft<=sRight;) {
+                    mid = (sLeft + sRight) / 2;
+                    if (array[top][mid]==target) return true;
+                    else if (array[top][mid]<target) sLeft = mid+1;
+                    else sRight = mid-1;
+                }
+                if (mid<right) right = mid; //利用终止点缩小右边界
+                top++;
+
+                //对下边界进行折半，可以缩小左边界
+                sLeft = left, sRight = right;
+                for (;sLeft<=sRight;) {
+                    mid = (sLeft + sRight) / 2;
+                    if (array[bottom][mid]==target) return true;
+                    else if (array[bottom][mid]<target) sLeft = mid+1;
+                    else sRight = mid-1;
+                }
+                if (left<mid) left = mid; //利用终止点缩小左边界
+                bottom--;
+
+                //对左边界进行折半，可以缩小下边界
+                sTop = top, sBottom = bottom;
+                for (;sTop<=sBottom;) {
+                    mid = (sTop + sBottom) / 2;
+                    if (array[mid][left]==target) return true;
+                    else if (array[mid][left]<target) sTop = mid+1;
+                    else sBottom = mid-1;
+                }
+                if (mid<bottom) bottom = mid; //利用终止点缩小下边界
+                left++;
+
+                //对右边界进行折半，可以缩小上边界
+                sTop = top, sBottom = bottom;
+                for (;sTop<=sBottom;) {
+                    mid = (sTop + sBottom) / 2;
+                    if (array[mid][right]==target) return true;
+                    else if (array[mid][right]<target) sTop = mid+1;
+                    else sBottom = mid-1;
+                }
+                if (top<mid) top = mid; //利用终止点缩小上边界
+                right--;
+            }
+            if (array[top][left]==target) return true;
+            else return false;
+        }
+    }
+};
